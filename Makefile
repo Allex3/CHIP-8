@@ -24,7 +24,9 @@ all: bin/emulator.out
 
 # NOTE FOR SELF: $@ is the name of the target being generated,
 # like example.o in example.o: ... , the word before the colon :
-#and $< is the first prerequisite, usually a source file, 
+#and $< is the first prerequisite, usually a source file,
+#also, $^ substitutes ALL the prerequisites above the command :3
+
 # prerequisites are what's after the colon on the first line
 #and the other lines are executed
 
