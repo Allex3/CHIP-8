@@ -4,8 +4,12 @@
 #include "peripherals.h"
 #include "chip8.h"
 
-int main() 
+#define true 1
+#define false 0
+
+int main(int argc, char *args[])
 {
-    printf("Hello world!");
+    
+
     return 0;
 }
