@@ -75,30 +75,64 @@ void draw(unsigned char *display)
     // the display is 64 x 8 width ,32 x 8 height, 8 because of the bits
     // and a pixel is a byte, the font for example is 5 bytes long
 
-    //the display is as follows: 
-    //0->63 is row 1 of pixels, 64->127 is row two, etc.
-    // the row is being represented by y*64
-    //the pixel in that row, on the X axis, is literally x
-    //so the current pixel targeted is x+y*64
-    //it could also be a matrix display[y][x]
-    //with y going from 0 to 63
-    //but it's easier this way and it is literally the same
+    // the display is as follows:
+    // 0->63 is row 1 of pixels, 64->127 is row two, etc.
+    //  the row is being represented by y*64
+    // the pixel in that row, on the X axis, is literally x
+    // so the current pixel targeted is x+y*64
+    // it could also be a matrix display[y][x]
+    // with y going from 0 to 63
+    // but it's easier this way and it is literally the same
     for (int y = 0; y < 32; y++)
         for (int x = 0; x < 64; x++)
-         if(display[x + (y*64)]) //current pixel is set make it white
-         {
-            SDL_Rect pixel;
-            pixel.x = x*8;
-            pixel.y = y*8;
-            pixel.w = 8;
-            pixel.h = 8;
-            //draw the pixel at coordinates x*8 and y*8
-            //because the widnows size is actually 32*8*64*8
-            //and make it's width and heigh of 8 and 8
+            if (display[x + (y * 64)]) // current pixel is set make it white
+            {
+                SDL_Rect pixel;
+                pixel.x = x * 8;
+                pixel.y = y * 8;
+                pixel.w = 8;
+                pixel.h = 8;
+                // draw the pixel at coordinates x*8 and y*8
+                // because the widnows size is actually 32*8*64*8
+                // and make it's width and heigh of 8 and 8
 
-            SDL_RenderFillRect(renderer, &pixel); //put the pixel rectangle on the renderer
-         }
+                SDL_RenderFillRect(renderer, &pixel); // put the pixel rectangle on the renderer
+            }
 
-    //update the window
+    // update the window
     SDL_RenderPresent(renderer);
+}
+
+void sdlEventHandler(unsigned char *keypad) // handles SDL events for keypad
+{
+    SDL_Event e;
+
+    if (SDL_PollEvent(&e))
+    {
+        // the current keyboard state (the pressed keys)
+        // A array element with a value of 1 means that the key is pressed
+        //  and a value of 0 means that it is not.
+        // Indexes into this array are obtained by using SDL_Scancode values.
+        // so we can use the keyMap defined above to check for any pressed key
+
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+        if (e.type == SDL_QUIT || state[SDL_SCANCODE_ESCAPE]) // user quitted
+        {
+            quit = 1;
+            return;
+        }
+
+        // update the chip8 keypad with the current keys pressed and not pressed
+        // that interest us, so only the 16 keys from the keyMap
+        // and check their state if 1 or 0 with the state array
+        for (int keycode = 0; keycode < 16; keycode++)
+            keypad[keycode] = state[keyMap[keycode]];
+    }
+}
+
+void stopDisplay() 
+{
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
