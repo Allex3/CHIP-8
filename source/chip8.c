@@ -1,6 +1,6 @@
 #include "chip8.h"
-#include "peripherals.h"
 
+#include <string.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -68,7 +68,7 @@ unsigned char soundTimer; // delay - timing events of games; sound-sound effects
 unsigned char soundFlag;
 
 unsigned short stack[16]; // holds last address when a subroutine is called
-unsigned short sp;        // stack pointer
+unsigned char sp;        // stack pointer
 
 unsigned char keypad[16]; // hex based Keypad (0x0-0xF)
 
@@ -86,7 +86,10 @@ void initializeCHIP8(void)
     // Clear memory
     for (int i = 0; i <= 4095; i++)
         memory[i] = 0;
-    
+    // Clear stack
+    for (int i = 0; i <= 15; i++)
+        stack[i] = 0;
+
     // Load fontset
     memcpy(memory, fontset, sizeof(fontset));
     // first 512 positions are for the interpreter, so PC starts at position 0x200 (512)
@@ -94,12 +97,6 @@ void initializeCHIP8(void)
     opcode = 0;
     I = 0;
     sp = 0;
-
-    // Initialize clear display
-    initDisplay();
-    // Clear stack
-    for (int i = 0; i <= 15; i++)
-        stack[i] = 0;
 
     // Reset timers
     delayTimer = 0;
@@ -144,11 +141,17 @@ void initializeCHIP8(void)
 */
 void emulateCycle(void)
 {
-    opcode = memory[pc] << 8 | memory[pc + 1]; 
+    //Fetch opcode
+    opcode = memory[pc] << 8 | memory[pc + 1];
 
-    //Update timers, decrement them if they are not null
-    if (delayTimer > 0) delayTimer = -1;
-    if (soundTimer > 0) {
+    //Decode opcode
+    
+
+    // Update timers, decrement them if they are not null
+    if (delayTimer > 0)
+        delayTimer = -1;
+    if (soundTimer > 0)
+    {
         soundFlag = 1;
         puts("BEEP");
         soundFlag -= 1;
@@ -157,7 +160,7 @@ void emulateCycle(void)
 
 // start filling the memory with instructions in the given ROM
 // starting at position 512, reading data from the file in binary mode
-void loadROM(char *filename)
+int loadROM(char *filename)
 {
     FILE *fp = fopen(filename, "rb");
 
@@ -172,7 +175,7 @@ void loadROM(char *filename)
     if (fseek(fp, 0, SEEK_END) < 0)
     {
         fprintf(stderr, "Error reading the file: fseek\n");
-        return;
+        return -1;
     }
     // get the file size in bytes
     size_t dataSize = ftell(fp);
@@ -190,7 +193,7 @@ void loadROM(char *filename)
     if (bytesRead != dataSize)
     {
         fprintf(stderr, "Can't read the full ROM file");
-        return -2;
+        return -1;
     }
 
     return 0;

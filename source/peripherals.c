@@ -53,7 +53,7 @@ void initDisplay()
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     }
 
-    window = SDL_CreateWindow("CHIP-8", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 64 * 8, 32 * 8, 0);
+    window = SDL_CreateWindow("CHIP-8", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 64 * 16, 32 * 16, 0);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     /*flag means that the renderer uses hardware  acceleration */
@@ -88,10 +88,13 @@ void draw(unsigned char *display)
             if (display[x + (y * 64)]) // current pixel is set make it white
             {
                 SDL_Rect pixel;
-                pixel.x = x * 8;
-                pixel.y = y * 8;
-                pixel.w = 8;
-                pixel.h = 8;
+                //we make relative *16 it's size so we don't actually see 64x32
+                //because that's way too small
+                //we see 16*16 that area so we actually see something
+                pixel.x = x * 16;
+                pixel.y = y * 16;
+                pixel.w = 16;
+                pixel.h = 16;
                 // draw the pixel at coordinates x*8 and y*8
                 // because the widnows size is actually 32*8*64*8
                 // and make it's width and heigh of 8 and 8
