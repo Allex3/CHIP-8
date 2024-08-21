@@ -13,6 +13,7 @@ extern unsigned char keypad[16];
 extern unsigned char display[64 * 32];
 extern unsigned char delayTimer;
 extern unsigned char soundTimer;
+extern unsigned char soundFlag;
 
 
 void initializeCHIP8(void);

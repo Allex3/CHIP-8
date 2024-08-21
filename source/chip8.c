@@ -65,7 +65,7 @@ unsigned char display[64 * 32]; // 2048 pixels screen, this array holds the pixe
 
 unsigned char delayTimer; // two timers: They both count down at 60 hertz, until they reach 0.
 unsigned char soundTimer; // delay - timing events of games; sound-sound effects
-unsigned int soundFlag;
+unsigned char soundFlag;
 
 unsigned short stack[16]; // holds last address when a subroutine is called
 unsigned short sp;        // stack pointer
@@ -81,11 +81,12 @@ unsigned char keypad[16]; // hex based Keypad (0x0-0xF)
 void initializeCHIP8(void)
 {
     // Clear registers V0-VF
-    for (int i = 0; i <= 4095; i++)
-        memory[i] = 0;
-    // Clear memory
     for (int i = 0; i <= 15; i++)
         V[i] = 0;
+    // Clear memory
+    for (int i = 0; i <= 4095; i++)
+        memory[i] = 0;
+    
     // Load fontset
     memcpy(memory, fontset, sizeof(fontset));
     // first 512 positions are for the interpreter, so PC starts at position 0x200 (512)
